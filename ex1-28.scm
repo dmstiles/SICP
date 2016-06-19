@@ -33,16 +33,17 @@
 ;Value: non-trivial-root-test
 
 
+;; Test congruence of ((a^n)%n) with 1, denoting prime.
 (define (miller-rabin-test? n)
   (define (try-it a)
     (= (expmod a (- n 1) n) 1))
   (try-it (+ 1 (random (- n 1)))))
 ;Value: miller-rabin-test?
 
-;; Test congruence of ((a^n)%n) with 1, denoting prime.
+
 (define (fast-prime? n times)
   (cond ((= times 0) true)
-	((miller-rabin-test? n)) (fast-prime? n (- times 1))
+	((miller-rabin-test? n) (fast-prime? n (- times 1)))
 	(else false)))
 ;Value: fast-prime?
 
@@ -58,6 +59,7 @@
 
 
 ;; Testing:
+
 (expmod 2 3 4)
 ;Value: 0
 
@@ -88,7 +90,52 @@
 ;; Implementing a the `fast-prime?` procedure to use the Miller-Rabin test
 ;; in order to solidify the procedure against the Carmichael numbers.
 
+
 (fast-prime? 10 100)
+;Value: #f  
+
+(fast-prime? 13 100)
 ;Value: #t
 
+(fast-prime? 100 100)
+;Value: #f 
 
+(fast-prime? 101 100)
+;Value: #t
+
+(fast-prime? 113 100)
+;Value: #t 
+
+(fast-prime? 169 100)
+;Value: #f
+
+;; Carmichael numbers.
+
+(fast-prime? 561 100)
+;Value: #f
+
+(fast-prime? 1105 100)
+;Value: #f
+
+(fast-prime? 1729 100)
+;Value: #f
+
+(fast-prime? 2465 100)
+;Value: #f
+
+(fast-prime? 2821 100)
+;Value: #f
+
+(fast-prime? 6601 100)
+;Value: #f
+
+;; Very large primes.
+
+(fast-prime? 10000000019 100)
+;Value: #t
+
+(fast-prime? 10000000033 100)
+;Value: #t
+
+(fast-prime? 10000000061 100)
+;Value: #t
