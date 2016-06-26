@@ -25,14 +25,14 @@
 	(/ (n i) (d i))
 	(/ (n i) (+ (d i)
 		     (cont-frac-helper (inc i))))))
-  (cont-frac-helper 1))
+  (cont-frac-helper 0))
 ;Value: cont-frac
 
 ;; Iterative definition.
 (define (cont-frac-iter n d k)
   (define (iter i result)
     (if (= i 0) 
-	result
+	(/ (n i) (+ (d i) result))
 	(iter (dec i)
 	      (/ (n i) (+ (d i) result)))))
   (iter k 0))
@@ -58,27 +58,27 @@
 
 (cont-frac (lambda (i) 1.0)
 	   (lambda (i) 1.0)
-	   10)
+	   9)
 ;Value: .6179775280898876
 
 (cont-frac-iter (lambda (i) 1.0)
 		(lambda (i) 1.0)
-		10)
+		9)
 ;Value: .6179775280898876
 
 (cont-frac (lambda (i) 1.0)
 	   (lambda (i) 1.0)
-	   11)
+	   10)
 ;Value: .6180555555555556
 
 (cont-frac-iter (lambda (i) 1.0)
 		(lambda (i) 1.0)
-		11)
+		10)
 ;Value: .6180555555555556
 
 
 
 ;; Solutions:
 ;;
-;; 11 iterations required to get approximaiton accurate to 4 decimal places.
+;; 10 iterations required to get approximaiton accurate to 4 decimal places.
 
