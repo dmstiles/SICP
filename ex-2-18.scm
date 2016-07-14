@@ -12,24 +12,20 @@
 ;; Definitions:
 
 (define (reverse items)
-  (if (= (length items) 1)
-      (car items)
-      (cons (reverse (cdr items)) (car items))))
+  (if (null? items)
+      items
+      (append (reverse (cdr items)) (list (car items)))))
 ;Value: reverse
 
-(define (length items)
-  (if (null? items)
-      0
-      (+ 1 (length (cdr items)))))
-;Value: length
-
+(define (append list1 list2)
+  (if (null? list1)
+      list2
+      (cons (car list1) (append (cdr list1) list2))))
+;Value: append
 
 
 ;; Testing:
 
-(length (list 1 2 3))
-;Value: 3
-
 (reverse (list 1 4 9 16 25))
-;; ((((25 . 16) . 9) . 4) . 1)
+;;Value: (25 16 9 4 1)
 
