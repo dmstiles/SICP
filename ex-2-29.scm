@@ -12,16 +12,20 @@
 ;;    
 ;; B. Define a procedure `total-weight` that returns the total weight of a mobile.
 ;;
-;; C.
+;; C. Design a predicate that tests whether a binary mobile is balanced.
+;;
+;; D. How much would the preceding programs need to be changed if mobiles were
+;;    represented in terms of `cons` and not `list`?
+
 
 ;; Definitions:
 
 (define (make-mobile left right)
-  (list left right))
+  (cons left right))
 ;Value: make-mobile
 
 (define (make-branch length structure)
-  (list length structure))
+  (cons length structure))
 ;Value: make-branch
 
 (define (left-branch mobile)
@@ -29,7 +33,7 @@
 ;Value: left-branch
 
 (define (right-branch mobile)
-  (car (cdr mobile)))
+  (cdr mobile))
 ;Value: right-branch
 
 (define (branch-length branch)
@@ -37,7 +41,7 @@
 ;Value: branch-length
 
 (define (branch-structure branch)
-  (car (cdr branch)))
+  (cdr branch))
 ;Value: branch-structure
 
 (define (total-weight mobile)
@@ -49,8 +53,24 @@
   (let ((struct (branch-structure branch)))
     (if (not (pair? struct))
 	struct
-	(total-weight branch))))
+	(total-weight struct))))
 ;Value: branch-weight
+
+(define (balanced? mobile)
+  (let ((lb (left-branch mobile))
+	(rb (right-branch mobile)))
+    (and (= (* (branch-length lb) (branch-weight lb))
+	    (* (branch-length rb) (branch-weight rb)))
+	 (balanced-branch? lb)
+	 (balanced-branch? rb))))
+;Value: balanced?
+
+(define (balanced-branch? b)
+  (if (not (pair? (branch-structure b)))
+      true
+      (balanced b)))
+;Value: balanced-branch?
+
 
 ;; Testing:
 
@@ -59,12 +79,16 @@
 ;Value: m0
 
 (define m1 (make-mobile (make-branch 3 30)
-			m0))
+			(make-branch 4 m0)))
 ;Value: m1
 
-(define m2 (make-mobile m1 m0))
+(define m2 (make-mobile (make-branch 5 m0)
+			(make-branch 6 m1)))
 ;Value: m2
 
+(define m3 (make-mobile (make-branch 2 10)
+			(make-branch 1 20)))
+;Value: m3
 
 (left-branch m0)
 ;Value 13: (1 10)
@@ -87,3 +111,23 @@
 (total-weight m2)
 ;Value: 90
 
+(total-weight m3)
+;Value: 30
+
+(balanced? m3)
+;Value: #t
+
+(balanced? m2)
+;Value: #f
+
+
+;; Solution.
+;;
+;; By changing the constructors of `make-mobile` and `make-branch` to use `cons`
+;; instead of `list` only the preceding definitions for selectors on mobiles and
+;; branches require change. Since the representations for these object now use a 
+;; simple pair as opposed to a list the forms `car` and `cdr` address the target
+;; item without requiring the additional `car` filtering required when an object
+;; is not stored at the head of a list. Since these implementation details are 
+;; abstracted behind the respective selectors, procedures operating through the
+;; selector interface do not require any modification.
