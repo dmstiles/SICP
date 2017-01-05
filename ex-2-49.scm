@@ -45,7 +45,7 @@
 			   (make-segment (make-vect 0 0.5)
 					 (make-vect 0.5 0))))
 
-;; Definition by Bill The Lizard.
+;; Definition by Bill the Lizard.
 ;; (http://www.billthelizard.com/2011/10/sicp-249-defining-primitive-painters.html)
 (define wave-segs
  (list
