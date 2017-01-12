@@ -10,18 +10,18 @@
 ;;
 ;;    b. Algebraic expressions are presented in standard algebraic notation:
 ;;
-;;        (x + 3 + * (x + y + 2))
+;;        (x + 3 * (x + y + 2))
 
 
 
 ;; Definitions:
-n
-(define (variable? x) (symbol? x))
+
+(define (var? x) (symbol? x))
 ;Value: variable?
 
 
 (define (same-variable? v1 v2)
-  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+  (and (var? v1) (var? v2) (eq? v1 v2)))
 ;Value: same-variable?
 
 
@@ -42,56 +42,84 @@ n
   (cond ((or (=number? a 0) (=number? b 0)) 0)
 	((=number? a 1) b)
 	((=number? b 1) a)
-	((and (number? a) (number? b) (* a b)))
+	((and (number? a) (number? b)) (* a b))
 	(else (list a '* b))))
 ;Value: make-product
 
 
 (define (sum? exp)
-  (and (pair? exp) (eq? (cadr exp) '+)))
+  (and (pair? exp)
+       (contains? exp '+)))
 ;Value: sum?
 
 
 (define (addend sum)
-  (car sum))
+  (define (add-in head tail)
+    (if (eq? (cadr tail) '+)
+	(append head (list (car tail)))
+	(add-in (append head (list (car tail) (cadr tail)))
+		(cddr tail))))
+  (simplify (add-in '() sum)))
 ;Value: addend
 
 
 (define (augend sum)
-  (if (null? (cdddr sum))
-      (caddr sum)
-      (cddr sum)))
+  (simplify (if (eq? (cadr sum) '+)
+		(cddr sum)
+		(augend (cddr sum)))))
 ;Value: augend
 
 
+;; Delay multiplication while sums exist.
+;; Because recurision reverse the execution order.
 (define (product? exp)
-  (and (pair? exp) (eq? (cadr exp) '*)))
+  (and (pair? exp)
+       (not (sum? exp))
+       (contains? exp '*)))
 ;Value: product?
 
 
 (define (multiplier prod)
-  (car prod))
+  (define (lier-in head tail)
+    (if (eq? (cadr tail) '*)
+	(append head (list (car tail)))
+	(lier-in (append head (list (car head) (cadr head)))
+		 (cddr tail))))
+  (simplify (lier-in '() prod)))
 ;Value: multiplier
 
 
 (define (multiplicand prod)
-  (if (null? (cdddr prod))
-      (caddr prod)
-      (cddr prod)))
+  (simplify (if (eq? (cadr prod) '*)
+		(cddr prod)
+		(multiplicand (cddr prod)))))
 ;Value: multiplicand
 
 
+;; Delay exponentiation while sums and product exist.
+;; Because recurision reverse the execution order.
 (define (exponentiation? exp)
-  (and (pair? exp) (eq? (car exp) '^)))
+  (and (pair? exp)
+       (not (sum? exp))
+       (not (product? exp))
+       (contains? exp '^)))
+	    
 ;Value: exponentiation?
 
 
 (define (base exp)
-  (cadr exp))
+  (define (base-in head tail)
+    (if (eq? (cadr tail) '^)
+	(append head (list (car tail)))
+	(base-in (append head (list (car head) (cadr head)))
+		 (cddr tail))))
+  (simplify (base-in '() exp)))
 ;Value: base
 
 (define (exponent exp)
-  (caddr exp))
+  (simplify (if (eq? (cadr exp) '^)
+		(cddr exp)
+		(exponent (cddr exp)))))
 ;Value: exponent
 
 (define (make-exponentiation a b)
@@ -100,7 +128,7 @@ n
 	((=number? b 0) 1)
 	((=number? b 1) a)
 	((and (number? a) (number? b)) (^ a b))
-	(else (list '^ a b))))
+	(else (list a '^ b))))
 ;Value: make-exponentiation
 
 
@@ -112,31 +140,33 @@ n
   (*^ exponent 1))
 ;Value: ^
 
-(define (reverse items)
-  (if (null? items)
-      items
-      (append (reverse (cdr items)) (list (car items)))))
-;Value: reverse
 
-(define (append list1 list2)
-  (if (null? list1)
-      list2
-      (cons (car list1) (append (cdr list1) list2))))
-;Value: append
+(define (contains? seq sym)
+  (cond ((null? seq) false)
+	((eq? (car seq) sym) true)
+	(else (contains? (cdr seq) sym))))
+;Value: contains?
+
+
+(define (simplify seq)
+  (cond ((not (pair? seq)) seq)
+	((null? (cdr seq)) (car seq))
+	(else seq)))
+;Value: simplify
 
 
 (define (deriv exp var)
   (cond ((number? exp) 0)
-	((variable? exp)
+	((var? exp)
 	 (if (same-variable? exp var) 1 0))
 	((sum? exp)
 	 (make-sum (deriv (addend exp) var)
 		   (deriv (augend exp) var)))
 	((product? exp)
 	 (make-sum (make-product (multiplier exp)
-			      (deriv (multiplicand exp) var))
+				 (deriv (multiplicand exp) var))
 		   (make-product (multiplicand exp)
-			      (deriv (multiplier exp) var))))
+				 (deriv (multiplier exp) var))))
 	((exponentiation? exp)
 	 (make-product (make-product (exponent exp)
 				     (make-exponentiation (base exp) (- (exponent exp) 1)))
@@ -149,6 +179,24 @@ n
 
 ;; Testing:
 
+(contains? '(a b c 1 2 3) '1)
+;Value: #t
+
+(contains? '(a b c 1 2 3) 'x)
+;Value: #f
+
+(addend '(2 * 3 + 4 * 6))
+;Value 18: (2 * 3)
+
+(augend '(2 * 3 + 4 * 6))
+;Value 19: (4 * 6)
+
+(sum? '(2 * 3 + 4 * 6))
+;Value: #t
+
+(product? '(2 * 3 + 4 * 6))
+;Value: #f
+
 (deriv '(x + 3 * (x + y + 2)) 'x)
 ;Value: 4
 
@@ -159,5 +207,27 @@ n
 ;Value: 1
 
 (deriv '(x * y * (x + 3)) 'x)
-;Value 15: ((x * y) + (y * (x + 3)))
+;Value 21: ((x * y) + (y * (x + 3)))
 
+(deriv '(1 + 2 * x * 4 + 5) 'x)
+;Value: 8
+
+(deriv '(x * 3 + 5 * (x + y + 2)) 'x)
+;Value: 8
+
+(deriv '(3 + 4 * x ^ 2) 'x)
+;Value 28: (4 * (2 * x))
+
+(deriv '(x ^ 3 + 4 * x ^ 7) 'x)
+;Value 30: ((3 * (x ^ 2)) + (4 * (7 * (x ^ 6))))
+
+;; Not perfect yet...
+(deriv '(x ^ 2 * 4 * x ^ 7) 'x)
+;The object (), passed as an argument to safe-cdr, is not a pair.
+
+;; But close enough.
+(deriv '((x ^ 3) * 4 * (x ^ 7)) 'x)
+;Value 32: (((x ^ 3) * (4 * (7 * (x ^ 6)))) + ((4 * (x ^ 7)) * (3 * (x ^ 2))))
+;; => (x^3 * 28x^6) + (4x^7 * 3x^2)
+;; => 28x^9 + 12x^9
+;; => 40x^9
