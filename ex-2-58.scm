@@ -64,9 +64,11 @@
 
 
 (define (augend sum)
-  (simplify (if (eq? (cadr sum) '+)
-		(cddr sum)
-		(augend (cddr sum)))))
+  (define (aug-in tail)
+    (if (eq? (cadr tail) '+)
+	(cddr tail)
+	(augend (cddr tail))))
+  (simplify (aug-in sum)))
 ;Value: augend
 
 
@@ -90,9 +92,11 @@
 
 
 (define (multiplicand prod)
-  (simplify (if (eq? (cadr prod) '*)
-		(cddr prod)
-		(multiplicand (cddr prod)))))
+  (define (licand-in tail)
+    (if (eq? (cadr tail) '*)
+	(cddr tail)
+	(multiplicand (cddr tail))))
+  (simplify (licand-in prod)))
 ;Value: multiplicand
 
 
