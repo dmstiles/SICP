@@ -109,6 +109,7 @@ tree3
 ;;    will need to traverse the subproblem size in order to perform the append. For a balanced
 ;;    tree, each subproblem halving doubles the number of subproblem, therefore each level of the
 ;;    recursive process will, in aggregate, perform n comptational steps (for log(n) total sublevels).
+;;    This gives the `tree->list-2` procedure an O(nlog(n)) time-complexity, when the tree is balanced.
 ;;    For an unbalanced tree, the number of subproblems at each level can vary, and the time required
 ;;    to solve the problem will be proportional to the size of the subproblem. Therefore in the worst
 ;;    case (completely unbalanced tree) each recursive step will produce a subproblem of size n - 1.
