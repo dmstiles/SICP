@@ -106,7 +106,7 @@
 	 (if (eq? s (symbol-leaf tree))
 	     '()
 	     (error "unknown symbol -- ENCODE-SYMBOL" s)))
-	((contains? s (left-branch tree))
+	((contains? s (symbols left-branch tree))
 	 (cons 0 (encode-symbol s (left-branch tree))))
 	(else (cons 1 (encode-symbol s (right-branch tree))))))
 ;Value: encode-symbol
