@@ -151,7 +151,7 @@
 (define small-test-tree (generate-huffman-tree '((A 3) (B 5) (C 6) (D 6))))
 ;Value: small-test-tree
 
-test-tree
+small-test-tree
 ;Value 20: (((leaf a 3) (leaf b 5) (a b) 8) ((leaf d 6) (leaf c 6) (d c) 12) (a b d c) 20)
 
 ;;         (20)
