@@ -26,10 +26,9 @@
 ;;
 ;; a.
 ;;
-;; The following solution requires that each departments `file` data structure implement
-;; `dept-name` selector which retrieves the type-tag information, and the `dept-data`
-;; selector which retrieves the set of employee records operand to the operation found
-;; in the generic table lookup.
+;; The following solution requires that each department simply put their implementation
+;; for the `get-record` procedure into the lookup table used to find the concrete procedure
+;; implementation.
 
 (define (get-record employee division)
   ((get division 'get-record) employee))
@@ -40,8 +39,8 @@
 ;;
 ;; The following solution delegates the record lookup to the previously defined `get-record`
 ;; procedure. With this record, the procedure does a lookup on the proper implementation
-;; for `get-salary` according to the division name, in order to properly obtain the division name
-;; the `employee-record` data structure must have this field as at its `car`.
+;; for `get-salary` according to the division name. In order to properly obtain the division name
+;; the `employee-record` data structure must have this field at its `car`.
 (define (get-salary employee-record)
   ((get (car employee-record) 'get-salary) (cdr employee-record)))
 ;Value: get-salary
@@ -49,9 +48,9 @@
 
 ;; c.
 ;;
-;; The following solution travers the divisions list until either the list is empty, no matching
+;; The following solution traverses the divisions list until either the list is empty, no matching
 ;; record, or a particular division returns a match for the employee. The procedure delegates
-;; the implementation lookup of `get-record` the procedure defined above.
+;; the implementation lookup of `get-record` to the procedure defined above.
 (define (find-employee-record employee division-list)
   (if (null? division-list)
       false 
@@ -64,12 +63,10 @@
 
 ;; d.
 ;;
-;; In order to integrate a new division the division must implement the `dept-data` and
-;; `dept-name` selectors for the data structure composing their files. The division is
-;; then free to implement record selectors however they choose, as long as the selectors
-;; are tagged with the department name registered in the operation lookup table with their
-;; concrete implementation.
-
+;; In order to integrate a new division the division must `tag` its employee
+;; records with the division name at the record's head. Then the division is free to
+;; implement record selectors however they choose, as long as the selectors are tagged
+;; with the department name when registered in the operation lookup table.
 
 
 ;; Definitions:
@@ -136,7 +133,6 @@
   (define (has-employee? employee-name)
     (eq? employee-name 'curt))
   (define (get-employee-record employee-name)
-    ; Would use the employee-name to look up a record in the division's file, but we'll fake it:
     (if (has-employee? employee-name)
 	(tag (list 'seattle employee-name 100000))
         false))
@@ -144,7 +140,7 @@
     (car employee-record))
   (define (get-employee-salary employee-record)
     (caddr employee-record))
-  ;; installation
+  ;; Installation
   (put 'vine 'get-record get-employee-record)
   (put 'vine 'get-address get-employee-address)
   (put 'vine 'get-salary get-employee-salary)
@@ -164,7 +160,7 @@
     (cadr employee-record))
   (define (get-employee-address employee-record)
     (caddr employee-record))
-  ;; installation
+  ;; Installation
   (put 'periscope 'get-record get-employee-record)
   (put 'periscope 'get-salary get-employee-salary)
   (put 'periscope 'get-address get-employee-address)
