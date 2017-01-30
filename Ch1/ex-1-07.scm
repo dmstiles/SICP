@@ -1,18 +1,35 @@
 ;; Exercise 1.7
 
 
-;; Supporting procedure definitions.
+;; Definitions:
+
+;; Design a square root procedure that watches how `guess` changes between iterations, terminating 
+;; when the change is a very small fraction of the guess.
+
+(define (sqrt-iter old-guess guess x)
+  (if (good-enough? old-guess guess x)
+      guess
+      (sqrt-iter guess (improve guess x) x)))
+;Value: sqrt-iter
+
+(define (good-enough? old-guess new-guess x)
+  (< (abs (- old-guess new-guess)) 0.001))
+;Value: good-enough?
+
 
 (define (square x) (* x x))
 ;Value: square
+
 
 (define (average x y)
   (/ (+ x y) 2))
 ;Value: average
 
+
 (define (improve guess x)
   (average guess (/ x guess)))
 ;Value: improve
+
 
 (define (sqrt x)
   (sqrt-iter 0.0 1.0 x))
@@ -45,19 +62,6 @@
 ;; This difference in answers is due to the predetermined tolerance of 0.001 defined in the `good-enough?`
 ;; procedure, which allows processing to terminate before an accurate value at this scale is found.
 
-
-;; Design a square root procedure that watches how `guess` changes between iterations, terminating 
-;; when the change is a very small fraction of the guess.
-
-(define (sqrt-iter old-guess guess x)
-  (if (good-enough? old-guess guess x)
-      guess
-      (sqrt-iter guess (improve guess x) x)))
-;Value: sqrt-iter
-
-(define (good-enough? old-guess new-guess x)
-  (< (abs (- old-guess new-guess)) 0.001))
-;Value: good-enough?
 
 
 ;; Testing.
