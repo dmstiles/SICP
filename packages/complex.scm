@@ -34,7 +34,7 @@
 		       (- (angle z1) (angle z2))))
 
   ;; system interface
-  (define (tag z) (attatch-tag 'complex z))
+  (define (tag z) (attach-tag 'complex z))
   (put 'add '(complex complex)
        (lambda (z1 z2) (tag (add z1 z2))))
   (put 'sub '(complex complex)

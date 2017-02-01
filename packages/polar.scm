@@ -25,7 +25,7 @@
     (cons r a))
 
   ;; system interface
-  (define (tag x) (attatch-tag 'polar x))
+  (define (tag x) (attach-tag 'polar x))
   (put 'real-part '(polar) real-part)
   (put 'imag-part '(polar) imag-part)
   (put 'magnitude '(polar) magnitude)

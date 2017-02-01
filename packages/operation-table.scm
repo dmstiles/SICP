@@ -53,7 +53,7 @@
 	   ("No method for these types -- APPLY-GENERIC"
 	    (list op type-tags)))))))
 
-(define (attatch-tag type-tag contents)
+(define (attach-tag type-tag contents)
   (cons type-tag contents))
 
 (define (type-tag datum)

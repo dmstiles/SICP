@@ -22,7 +22,7 @@
     (cons (* r (cos a)) (* r (sin a))))
 
   ;; system interface
-  (define (tag x) (attatch-tag 'rectangular x))
+  (define (tag x) (attach-tag 'rectangular x))
   (put 'real-part '(rectangular) real-part)
   (put 'imag-part '(rectangular) imag-part)
   (put 'magnitude '(rectangular) magnitude)
