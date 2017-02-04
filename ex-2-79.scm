@@ -6,7 +6,7 @@
 ;; Install the predicate, in the generic arithmetic package.
 
 
-;; Definitions:
+;; Imports:
 
 (load "packages/generic-arithmetic.scm")
 
@@ -20,10 +20,37 @@
 ;  Loading "packages/scheme-number.scm"... done
 
 
+
+;; Definitions:
+
+;; In 'generic-arithmetic' package
 (define (equ? x y)
   (apply-generic 'equ? x y))
 ;Value: equ?
 
+;; In 'complex' package
+(define (equ? z1 z2)
+  (and (= (real-part z1) (real-part z2))
+       (= (imag-part z1) (imag-part z2))))
+
+(put 'equ? '(complex complex)
+     (lambda (z1 z2) (equ? z1 z2)))
+
+;; In 'rational' package
+(define (equ? x y)
+  (= (* (numer x) (denom y))
+     (* (denom x) (numer y))))
+
+(put 'equ? '(rational rational)
+     (lambda (x y) (equ? x y)))
+     
+
+;; In 'scheme-number' package
+(put 'equ? '(scheme-number scheme-number) =)
+
+
+
+;; Testing:
 
 (define a (make-scheme-number 1))
 ;Value: a
@@ -49,10 +76,10 @@
 (define c-rat (make-rational 2 4))
 ;Value: c-rat
 
-(equ? a b)
+(equ? a-rat b-rat)
 ;Value: #f
 
-(equ? a c)
+(equ? a-rat c-rat)
 ;Value: #t
 
 

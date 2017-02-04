@@ -21,6 +21,8 @@
   (put 'div '(scheme-number scheme-number)
        (lambda (x y) (tag (/ x y))))
   (put 'equ? '(scheme-number scheme-number) =)
+  (put '=zero? '(scheme-number)
+       (lambda (x) (= 0 x)))
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
   'scheme-number-package)

@@ -41,7 +41,6 @@
   (define (equ? z1 z2)
     (and (= (real-part z1) (real-part z2))
 	 (= (imag-part z1) (imag-part z2))))
-  
   ;; system interface
   (define (tag z) (attach-tag 'complex z))
   (put 'real-part '(complex) real-part)
@@ -56,8 +55,9 @@
        (lambda (z1 z2) (tag (mul z1 z2))))
   (put 'div '(complex complex)
        (lambda (z1 z2) (tag (div z1 z2))))
-  (put 'equ? '(complex complex)
-       (lambda (z1 z2) (equ? z1 z2)))
+  (put 'equ? '(complex complex) equ?)
+  (put '=zero? '(complex)
+       (lambda (z) (= 0 (real-part z) (imag-part z))))
   (put 'make-from-real-imag 'complex
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
