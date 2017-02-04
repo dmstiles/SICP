@@ -10,8 +10,8 @@
 (define (install-complex-package)
 
   ;; imports
-  (load "rectangular.scm")
-  (load "polar.scm")
+  (load "packages/rectangular.scm")
+  (load "packages/polar.scm")
 
   ;; imported procedures from rectangular and polar packages
   (define (make-from-real-imag x y)
@@ -20,6 +20,12 @@
     ((get 'make-from-mag-ang 'polar) r a ))
 
   ;; internal procedures
+  
+  (define (real-part z) (apply-generic 'real-part z))
+  (define (imag-part z) (apply-generic 'imag-part z))
+  (define (magnitude z) (apply-generic 'magnitude z))
+  (define (angle z) (apply-generic 'angle z))
+
   (define (add z1 z2)
     (make-from-real-imag (+ (real-part z1) (real-part z2))
 			 (+ (imag-part z1) (imag-part z2))))
@@ -32,9 +38,16 @@
   (define (div z1 z2)
     (make-from-mag-ang (/ (magnitude z1) (magnitude z2))
 		       (- (angle z1) (angle z2))))
-
+  (define (equ? z1 z2)
+    (and (= (real-part z1) (real-part z2))
+	 (= (imag-part z1) (imag-part z2))))
+  
   ;; system interface
   (define (tag z) (attach-tag 'complex z))
+  (put 'real-part '(complex) real-part)
+  (put 'imag-part '(complex) imag-part)
+  (put 'magnitude '(complex) magnitude)
+  (put 'angle '(complex) angle)
   (put 'add '(complex complex)
        (lambda (z1 z2) (tag (add z1 z2))))
   (put 'sub '(complex complex)
@@ -43,6 +56,8 @@
        (lambda (z1 z2) (tag (mul z1 z2))))
   (put 'div '(complex complex)
        (lambda (z1 z2) (tag (div z1 z2))))
+  (put 'equ? '(complex complex)
+       (lambda (z1 z2) (equ? z1 z2)))
   (put 'make-from-real-imag 'complex
        (lambda (x y) (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
@@ -51,3 +66,8 @@
        		 
 (install-complex-package)
 
+(define (make-complex-from-real-imag x y)
+  ((get 'make-from-real-imag 'complex) x y))
+
+(define (make-complex-from-mag-ang r a)
+  ((get 'make-from-mag-ang 'complex) r a))

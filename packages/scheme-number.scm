@@ -20,8 +20,12 @@
        (lambda (x y) (tag (* x y))))
   (put 'div '(scheme-number scheme-number)
        (lambda (x y) (tag (/ x y))))
+  (put 'equ? '(scheme-number scheme-number) =)
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
   'scheme-number-package)
 
 (install-scheme-number-package)
+
+(define (make-scheme-number n)
+  ((get 'make 'scheme-number) n))
