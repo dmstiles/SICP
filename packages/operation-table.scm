@@ -44,14 +44,11 @@
 
 (define put (operation-table 'insert-proc!))
 
-(define (apply-generic op . args)
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get op type-tags)))
-      (if proc
-	  (apply proc (map contents args))
-	  (error
-	   ("No method for these types -- APPLY-GENERIC"
-	    (list op type-tags)))))))
+(define coercion-table (make-table))
+
+(define get-coercion (coercion-table 'lookup-proc))
+
+(define put-coercion (coercion-table 'insert-proc!))
 
 (define (attach-tag type-tag contents)
   (if (eq? type-tag 'scheme-number)
@@ -69,3 +66,28 @@
 	((pair? datum) (cdr datum))
 	(else
 	 (error "Bad tagged datum -- CONTENTS" datum))))
+
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+	  (apply proc (map contents args))
+	  (if (= (length args) 2) ;; only consider binary ops
+	      (let ((type1 (car type-tags))
+		    (type2 (cadr type-tags)))
+		(if (eq? type1 type2)
+		    (error "No method for these types"
+			   (list op type-tags))
+		    (let ((a1 (car args))
+			  (a2 (cadr args)))
+		      (let ((t1->t2 (get-coercion type1 type2))
+			    (t2->t1 (get-coercion type2 type1)))
+			(cond (t1->t2
+			       (apply-generic op (t1->t2 a1) a2))
+			      (t2->t1
+			       (apply-generic op a1 (t2->t1 a2)))
+			      (else
+			       (error "No method for these types"
+				      (list op type-tags))))))))
+	      (error "No method for these types"
+		     (list op type-tags)))))))
