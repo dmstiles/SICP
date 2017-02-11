@@ -45,6 +45,9 @@
        (lambda (x y) (equ? x y)))
   (put '=zero? '(rational)
        (lambda (r) (= 0 (numer r))))
+  (put 'raise '(rational)
+       (lambda (r) ((get 'make-from-real-imag 'complex)
+		    (/ (numer r) (denom r)) 0)))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'rational-package)

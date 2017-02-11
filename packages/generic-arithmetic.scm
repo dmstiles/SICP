@@ -21,3 +21,5 @@
 (define (equ? x y) (apply-generic 'equ? x y))
 
 (define (=zero? x) (apply-generic '=zero? x))
+
+(define (raise x) (apply-generic 'raise x))

@@ -25,6 +25,8 @@
   (put 'equ? '(scheme-number scheme-number) =)
   (put '=zero? '(scheme-number)
        (lambda (x) (= 0 x)))
+  (put 'raise '(scheme-number)
+       (lambda (x) ((get 'make 'rational) x 1)))
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
   'scheme-number-package)
