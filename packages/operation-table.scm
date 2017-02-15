@@ -75,7 +75,13 @@
 	  (if (homogenous? type-tags)
 	      (error "No method for these types"
 		     (list op type-tags))
-	      (coerce type-tags args op))))))
+	      (let ((rank1 (type-rank (type-tag (car args))))
+		    (rank2 (type-rank (type-tag (cadr args)))))
+		(if (< rank1 rank2)
+		    (apply-generic op (raise (car args)) (cadr args))
+		    (apply-generic op (car args) (raise (cadr args))))))))))
+		    
+
 
 (define (coerce type-tags args op)
   (if (null? type-tags)
