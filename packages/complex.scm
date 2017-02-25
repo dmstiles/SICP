@@ -56,6 +56,10 @@
   (put 'div '(complex complex)
        (lambda (z1 z2) (tag (div z1 z2))))
   (put 'equ? '(complex complex) equ?)
+  (put 'project '(complex)
+       (lambda (z)
+	 (let ((rat (rationalize (inexact->exact (real-part z)) 1/100)))
+	   ((get 'make 'rational) (numerator rat) (denominator rat)))))
   (put '=zero? '(complex)
        (lambda (z) (= 0 (real-part z) (imag-part z))))
   (put 'make-from-real-imag 'complex

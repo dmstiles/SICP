@@ -44,8 +44,11 @@
        (lambda (r) (= 0 (numer r))))
   (put 'raise '(rational)
        (lambda (r) ((get 'make-from-real-imag 'complex)
-		    (/ (numer r) (denom r))
+		    (/ (* 1.0 (numer r)) (denom r))
 		    0)))
+  (put 'project '(rational)
+       (lambda (r) ((get 'make 'scheme-number) (integer-round (numer r)
+							      (denom r)))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'rational-package)

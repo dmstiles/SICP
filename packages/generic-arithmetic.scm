@@ -24,6 +24,8 @@
 
 (define (raise x) (apply-generic 'raise x))
 
+(define (project x) (apply-generic 'project x))
+
 (define type-tower (list 'scheme-number 'rational 'real 'complex))
 
 (define (type-rank t)

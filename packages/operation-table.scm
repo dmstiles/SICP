@@ -71,7 +71,10 @@
   (let ((type-tags (map type-tag args)))
     (let ((proc (get op type-tags)))
       (if proc
-	  (apply proc (map contents args))
+	  (let ((res (apply proc (map contents args))))
+	    (cond ((eq? op 'raise) res)
+		  ((eq? op 'equ?) res)
+		  (else (drop res))))
 	  (if (homogenous? type-tags)
 	      (error "No method for these types"
 		     (list op type-tags))
@@ -121,3 +124,15 @@
   (cond ((null? items) false)
 	((eq? elem (car items)) true)
 	(else (contains? elem (cdr items)))))
+
+
+(define (drop number)
+  (let ((proj (get 'project (list (type-tag number)))))
+    (if proj
+	(let ((dropped (proj (contents number))))
+	  (let ((raised (raise dropped)))
+	    (if (equ? number raised)
+		(drop dropped)
+		number)))
+	  number)))
+    
